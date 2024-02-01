@@ -3,25 +3,25 @@ import { encrypt } from '@metamask/eth-sig-util';
 
 const version = 'x25519-xsalsa20-poly1305';
 
-export async function deployContract({
+export const deployProcessor = async ({
   walletClient,
-  name,
+  storeName,
   reporter,
   reporterPublicKey,
   arbiter,
   arbiterPublicKey,
   token,
   ...params
-}) {
+}) => {
   return walletClient.deployContract({
     ...params,
     abi,
     bytecode,
-    args: [name, reporter, reporterPublicKey, arbiter, arbiterPublicKey, token]
+    args: [storeName, reporter, reporterPublicKey, arbiter, arbiterPublicKey, token]
   });
 }
 
-export async function submitOrder({ walletClient, orderId, price, shipping, metadata, ...params }) {
+export const submitOrder = async ({ walletClient, orderId, price, shipping, metadata, ...params }) => {
   return walletClient.writeContract({
     ...params,
     abi,
@@ -30,40 +30,104 @@ export async function submitOrder({ walletClient, orderId, price, shipping, meta
   });
 }
 
-export async function shipOrder({
+export const shipOrder = async ({
   walletClient,
   orderId,
-  buyerPublicKeyHex,
-  reporterPublicKeyHex,
+  buyerPublicKey,
+  reporterPublicKey,
   carrier,
   trackingNumber,
   ...params
-}) {
-  const buyerPublicKeyBase64 = hexToBase64(buyerPublicKeyHex);
-  const reporterPublicKeyBase64 = hexToBase64(reporterPublicKeyHex);
+}) => {
   const data = JSON.stringify({ carrier, trackingNumber });
-  const shipmentBuyerObject = encrypt({ data, publicKey: buyerPublicKeyBase64, version });
-  const shipmentReporterObject = encrypt({ data, publicKey: reporterPublicKeyBase64, version });
-  const shipmentBuyer = JSON.stringify(shipmentBuyerObject);
-  const shipmentReporter = JSON.stringify(shipmentReporterObject);
-  const shipmentBuyerBytes = Buffer.from(shipmentBuyer);
-  const shipmentReporterBytes = Buffer.from(shipmentReporter, 'utf8');
+  const shipmentBuyer = encryptData({ data, publicKeyHex: buyerPublicKey });
+  const shipmentReporter = encryptData({ data, publicKeyHex: reporterPublicKey });
   return walletClient.writeContract({
     ...params,
     abi,
     function: 'ship',
-    args: [orderId, shipmentBuyerBytes, shipmentReporterBytes]
+    args: [orderId, shipmentBuyer, shipmentReporter]
   });
 }
 
-export async function getOrder({ publicClient, orderId, ...params }) {
-  const response = await publicClient.readContract({
+export const deliverOrder = async ({ walletClient, orderId, ...params }) => {
+  return walletClient.writeContract({
+    ...params,
+    abi,
+    function: 'deliver',
+    args: [orderId]
+  });
+}
+
+export const failOrder = async ({ walletClient, orderId, ...params }) => {
+  return walletClient.writeContract({
+    ...params,
+    abi,
+    function: 'fail',
+    args: [orderId]
+  });
+}
+
+export const getReporterPublicKey = async ({ publicClient, ...params }) => {
+  return publicClient.readContract({
+    ...params,
+    abi,
+    function: 'getReporterPublicKey',
+    args: []
+  });
+};
+
+export const getArbiterPublicKey = async ({ publicClient, ...params }) => {
+  return publicClient.readContract({
+    ...params,
+    abi,
+    function: 'getArbiterPublicKey',
+    args: []
+  });
+};
+
+export const getOrder = async ({ publicClient, orderId, ...params }) => {
+  const [
+    sequence,
+    buyer,
+    buyerPublicKey,
+    price,
+    shipping,
+    submittedBlock,
+    shippedBlock,
+    deliveredBlock,
+    state,
+    metadata,
+    shipmentBuyer,
+    shipmentReporter
+  ] = await publicClient.readContract({
     ...params,
     abi,
     functionName: 'getOrder',
     args: [orderId]
   });
-  console.log({ response });
+  return {
+    id: orderId,
+    sequence,
+    buyer,
+    buyerPublicKey,
+    price,
+    shipping,
+    submittedBlock,
+    shippedBlock,
+    deliveredBlock,
+    state,
+    metadata,
+    shipmentBuyer,
+    shipmentReporter
+  };
 }
 
 const hexToBase64 = (hex) => Buffer.from(hex.slice(2), 'hex').toString('base64');
+
+const encryptData = ({ data, publicKeyHex }) => {
+  const base64 = hexToBase64(publicKeyHex);
+  const encrypted = encrypt({ data, publicKey: base64, version });
+  const string = JSON.stringify(encrypted);
+  return Buffer.from(string, 'utf8');
+};
