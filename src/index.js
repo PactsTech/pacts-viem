@@ -3,6 +3,8 @@ import { encrypt } from '@metamask/eth-sig-util';
 
 const version = 'x25519-xsalsa20-poly1305';
 
+export const getProcessor = (params) => getContract({ abi, ...params });
+
 export const deployProcessor = async ({
   walletClient,
   storeName,
@@ -31,6 +33,7 @@ export const submitOrder = async ({ walletClient, orderId, price, shipping, meta
 }
 
 export const shipOrder = async ({
+  publicClient,
   walletClient,
   orderId,
   buyerPublicKey,
@@ -68,22 +71,14 @@ export const failOrder = async ({ walletClient, orderId, ...params }) => {
   });
 }
 
-export const getReporterPublicKey = async ({ publicClient, ...params }) => {
-  return publicClient.readContract({
-    ...params,
-    abi,
-    function: 'getReporterPublicKey',
-    args: []
-  });
+export const getReporterPublicKey = async (params) => {
+  const contract = getProcessor(params);
+  return contract.read.reporterPublicKey([]);
 };
 
 export const getArbiterPublicKey = async ({ publicClient, ...params }) => {
-  return publicClient.readContract({
-    ...params,
-    abi,
-    function: 'getArbiterPublicKey',
-    args: []
-  });
+  const contract = getProcessor(params);
+  return contract.read.arbiterPublicKey([]);
 };
 
 export const getOrder = async ({ publicClient, orderId, ...params }) => {
