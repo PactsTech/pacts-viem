@@ -1,5 +1,6 @@
 import { getAddress, getContract } from 'viem';
-import { abi, bytecode } from 'pacts-contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json'
+// eslint-disable-next-line max-len
+import { abi, bytecode } from 'pacts-contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json';
 import { encrypt } from '@metamask/eth-sig-util';
 
 const version = 'x25519-xsalsa20-poly1305';
@@ -22,16 +23,23 @@ export const deployProcessor = async ({
     bytecode,
     args: [storeName, reporter, reporterPublicKey, arbiter, arbiterPublicKey, token]
   });
-}
+};
 
-export const submitOrder = async ({ walletClient, orderId, price, shipping, metadata, ...params }) => {
+export const submitOrder = async ({
+  walletClient,
+  orderId,
+  price,
+  shipping,
+  metadata,
+  ...params
+}) => {
   return walletClient.writeContract({
     ...params,
     abi,
     functionName: 'submit',
     args: [orderId, price, shipping, metadata]
   });
-}
+};
 
 export const shipOrder = async ({
   publicClient,
@@ -42,7 +50,7 @@ export const shipOrder = async ({
   ...params
 }) => {
   const checksum = getAddress(address);
-  const processor = getProcessor({ address: checksum, publicClient, walletClient });
+  const processor = getProcessor({ address: checksum, publicClient, walletClient, ...params });
   const [order, reporterPublicKey, arbiterPublicKey] = await Promise.all([
     processor.read.getOrder([orderId]),
     processor.read.reporterPublicKey([]),
@@ -54,7 +62,7 @@ export const shipOrder = async ({
   const shipmentReporter = encryptData({ data, publicKeyHex: reporterPublicKey });
   const shipmentArbiter = encryptData({ data, publicKeyHex: arbiterPublicKey });
   return contract.write.ship([orderId, shipmentBuyer, shipmentReporter, shipmentArbiter]);
-}
+};
 
 export const deliverOrder = async ({ walletClient, orderId, ...params }) => {
   return walletClient.writeContract({
@@ -63,7 +71,7 @@ export const deliverOrder = async ({ walletClient, orderId, ...params }) => {
     function: 'deliver',
     args: [orderId]
   });
-}
+};
 
 export const failOrder = async ({ walletClient, orderId, ...params }) => {
   return walletClient.writeContract({
@@ -72,16 +80,6 @@ export const failOrder = async ({ walletClient, orderId, ...params }) => {
     function: 'fail',
     args: [orderId]
   });
-}
-
-export const getReporterPublicKey = async (params) => {
-  const contract = getProcessor(params);
-  return contract.read.reporterPublicKey([]);
-};
-
-export const getArbiterPublicKey = async ({ publicClient, ...params }) => {
-  const contract = getProcessor(params);
-  return contract.read.arbiterPublicKey([]);
 };
 
 export const getOrder = async ({ publicClient, orderId, ...params }) => {
@@ -117,7 +115,25 @@ export const getOrder = async ({ publicClient, orderId, ...params }) => {
     shipmentReporter,
     shipmentArbiter
   };
-}
+};
+
+export const getReporterPublicKey = async ({ publicClient, ...params }) => {
+  return publicClient.readContract({
+    ...params,
+    abi,
+    functionName: 'reporterPublicKey',
+    args: []
+  });
+};
+
+export const getArbiterPublicKey = async ({ publicClient, ...params }) => {
+  return publicClient.readContract({
+    ...params,
+    abi,
+    functionName: 'arbiterPublicKey',
+    args: []
+  });
+};
 
 const hexToBase64 = (hex) => Buffer.from(hex.slice(2), 'hex').toString('base64');
 
