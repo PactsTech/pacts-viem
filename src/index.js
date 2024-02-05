@@ -1,3 +1,4 @@
+import { getAddress, getContract } from 'viem';
 import { abi, bytecode } from 'pacts-contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json'
 import { encrypt } from '@metamask/eth-sig-util';
 
@@ -36,21 +37,23 @@ export const shipOrder = async ({
   publicClient,
   walletClient,
   orderId,
-  buyerPublicKey,
-  reporterPublicKey,
   carrier,
   trackingNumber,
   ...params
 }) => {
+  const checksum = getAddress(address);
+  const processor = getProcessor({ address: checksum, publicClient, walletClient });
+  const [order, reporterPublicKey, arbiterPublicKey] = await Promise.all([
+    processor.read.getOrder([orderId]),
+    processor.read.reporterPublicKey([]),
+    processor.read.arbiterPublicKey([])
+  ]);
+  const buyerPublicKey = order[3];
   const data = JSON.stringify({ carrier, trackingNumber });
   const shipmentBuyer = encryptData({ data, publicKeyHex: buyerPublicKey });
   const shipmentReporter = encryptData({ data, publicKeyHex: reporterPublicKey });
-  return walletClient.writeContract({
-    ...params,
-    abi,
-    function: 'ship',
-    args: [orderId, shipmentBuyer, shipmentReporter]
-  });
+  const shipmentArbiter = encryptData({ data, publicKeyHex: arbiterPublicKey });
+  return contract.write.ship([orderId, shipmentBuyer, shipmentReporter, shipmentArbiter]);
 }
 
 export const deliverOrder = async ({ walletClient, orderId, ...params }) => {
@@ -84,17 +87,16 @@ export const getArbiterPublicKey = async ({ publicClient, ...params }) => {
 export const getOrder = async ({ publicClient, orderId, ...params }) => {
   const [
     sequence,
+    state,
     buyer,
     buyerPublicKey,
     price,
     shipping,
-    submittedBlock,
-    shippedBlock,
-    deliveredBlock,
-    state,
+    lastModifiedBlock,
     metadata,
     shipmentBuyer,
-    shipmentReporter
+    shipmentReporter,
+    shipmentArbiter
   ] = await publicClient.readContract({
     ...params,
     abi,
@@ -104,17 +106,16 @@ export const getOrder = async ({ publicClient, orderId, ...params }) => {
   return {
     id: orderId,
     sequence,
+    state,
     buyer,
     buyerPublicKey,
     price,
     shipping,
-    submittedBlock,
-    shippedBlock,
-    deliveredBlock,
-    state,
+    lastModifiedBlock,
     metadata,
     shipmentBuyer,
-    shipmentReporter
+    shipmentReporter,
+    shipmentArbiter
   };
 }
 

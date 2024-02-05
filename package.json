@@ -16,5 +16,8 @@
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^7.0.1"
+  },
+  "peerDependencies": {
+    "viem": "^2.0.0"
   }
 }
