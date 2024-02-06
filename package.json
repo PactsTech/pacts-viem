@@ -4,6 +4,7 @@
   "description": "Utilities for interacting with pacts contracts from viem",
   "main": "src/index.js",
   "scripts": {
+    "release": "npx semantic-release@23",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ."
   },

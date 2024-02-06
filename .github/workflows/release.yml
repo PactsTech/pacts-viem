@@ -23,10 +23,6 @@ jobs:
         node-version: '20'
     - name: Deps
       run: npm ci
-    - name: Tests
-      run: npm test
-    - name: Compile
-      run: npm run compile
     - name: Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
