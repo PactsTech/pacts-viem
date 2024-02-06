@@ -1,7 +1,7 @@
 import { getAddress, getContract } from 'viem';
+import { encrypt } from '@metamask/eth-sig-util';
 // eslint-disable-next-line max-len
 import { abi, bytecode } from '@pactstech/contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json';
-import { encrypt } from '@metamask/eth-sig-util';
 
 const version = 'x25519-xsalsa20-poly1305';
 
