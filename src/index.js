@@ -46,8 +46,7 @@ export const shipOrder = async ({
   walletClient,
   address,
   orderId,
-  carrier,
-  trackingNumber,
+  shipment,
   ...params
 }) => {
   const checksum = getAddress(address);
@@ -58,7 +57,7 @@ export const shipOrder = async ({
     processor.read.arbiterPublicKey([])
   ]);
   const buyerPublicKey = order[3];
-  const data = JSON.stringify({ carrier, trackingNumber });
+  const data = JSON.stringify(shipment);
   const shipmentBuyer = encryptData({ data, publicKeyHex: buyerPublicKey });
   const shipmentReporter = encryptData({ data, publicKeyHex: reporterPublicKey });
   const shipmentArbiter = encryptData({ data, publicKeyHex: arbiterPublicKey });
