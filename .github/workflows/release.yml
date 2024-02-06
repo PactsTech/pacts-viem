@@ -21,6 +21,8 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '20'
+    - name: Setup npmrc
+      run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > .npmrc
     - name: Deps
       run: npm ci
     - name: Release
