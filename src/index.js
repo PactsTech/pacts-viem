@@ -44,6 +44,7 @@ export const submitOrder = async ({
 export const shipOrder = async ({
   publicClient,
   walletClient,
+  address,
   orderId,
   carrier,
   trackingNumber,
