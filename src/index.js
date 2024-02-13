@@ -28,6 +28,7 @@ export const deployProcessor = async ({
 export const submitOrder = async ({
   walletClient,
   orderId,
+  buyerPublicKey,
   price,
   shipping,
   metadata,
@@ -37,7 +38,7 @@ export const submitOrder = async ({
     ...params,
     abi,
     functionName: 'submit',
-    args: [orderId, price, shipping, metadata]
+    args: [orderId, buyerPublicKey, price, shipping, metadata]
   });
 };
 
