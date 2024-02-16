@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { getAddress } from 'viem';
+import { getAddress, base64ToHex, toHex } from 'viem';
 // eslint-disable-next-line max-len
 import { abi } from '@pactstech/contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json';
-import { getDecimals } from './erc20.js';
+import { getDecimalsErc20, approveAllowanceErc20 } from './erc20.js';
 import { convertNumber, encryptData } from './utils.js';
 
 export const getOrder = async ({ publicClient, orderId, ...params }) => {
@@ -40,25 +40,68 @@ export const getOrder = async ({ publicClient, orderId, ...params }) => {
   };
 };
 
-export const createSubmitArgs = async ({
+export const setupOrder = async ({
   publicClient,
-  token,
-  orderId,
-  buyerPublicKey,
+  walletClient,
+  address,
   price,
   shipping,
   metadata
 }) => {
-  const decimals = await getDecimals({ publicClient, address: token });
+  const addresses = await walletClient.requestAddresses();
+  const account = addresses[0];
+  const buyerPublicKey = await getEncryptionKey({ walletClient, account });
+  const token = await getToken({ publicClient, address: pactsAddress });
+  const args = await createSubmitArgs({
+    publicClient,
+    token,
+    address,
+    buyerPublicKey,
+    price,
+    shipping,
+    metadata
+  });
+  const amount = args.price + args.shipping;
+  const approvalHash = await approveAllowanceErc20({
+    address: token,
+    publicClient,
+    walletClient,
+    account,
+    amount,
+    spender: address
+  });
+  if (approvalHash) {
+    const approvalReceipt = await publicClient.waitForTransactionReceipt({
+      hash: approvalHash
+    });
+    if (approvalReceipt.status !== 'success') {
+      const error = new Error('unable to approve erc20 allowance');
+      error.receipt = approvalReceipt;
+      throw error;
+    }
+  }
+  return args;
+};
+
+export const createSubmitArgs = async ({
+  publicClient,
+  token,
+  orderId,
+  encryptionKey,
+  price,
+  shipping,
+  metadata
+}) => {
+  const decimals = await getDecimalsErc20({ publicClient, address: token });
   const id = orderId || uuidv4();
-  const publicKey = `0x${Buffer.from(buyerPublicKey, 'base64').toString('hex')}`;
+  const buyerPublicKey = base64ToHex(encryptionKey);
   const priceDecimals = convertNumber(price, decimals);
   const shippingDecimals = convertNumber(shipping, decimals);
   const json = JSON.stringify(metadata);
-  const metadataHex = `0x${Buffer.from(json, 'utf8').toString('hex')}`;
+  const metadataHex = toHex(json);
   return {
     orderId: id,
-    buyerPublicKey: publicKey,
+    buyerPublicKey,
     price: priceDecimals,
     shipping: shippingDecimals,
     metadata: metadataHex
@@ -121,4 +164,8 @@ export const failOrder = async ({ walletClient, orderId, ...params }) => {
     function: 'fail',
     args: [orderId]
   });
+};
+
+const getEncryptionKey = async ({ walletClient, account }) => {
+  return walletClient.request({ method: 'eth_getEncryptionPublicKey', params: [account] });
 };

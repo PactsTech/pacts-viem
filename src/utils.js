@@ -1,10 +1,8 @@
 import { Buffer } from 'buffer';
-import { parseUnits } from 'viem';
+import { parseUnits, hexToBase64 } from 'viem';
 import { encrypt } from '@metamask/eth-sig-util';
 
 const version = 'x25519-xsalsa20-poly1305';
-
-export const hexToBase64 = (hex) => Buffer.from(hex.slice(2), 'hex').toString('base64');
 
 export const convertNumber = (number, decimals) => {
   const normalized = typeof decimals === 'bigint' ? Number(decimals) : decimals;

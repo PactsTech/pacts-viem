@@ -1,6 +1,6 @@
 import abi from 'erc-20-abi';
 
-export const getDecimals = async ({ publicClient, address }) => {
+export const getDecimalsErc20 = async ({ publicClient, address }) => {
   const response = await publicClient.readContract({
     address,
     abi,
@@ -10,7 +10,7 @@ export const getDecimals = async ({ publicClient, address }) => {
   return BigInt(response);
 };
 
-export const approveAllowance = async ({
+export const approveAllowanceErc20 = async ({
   publicClient,
   walletClient,
   account,
