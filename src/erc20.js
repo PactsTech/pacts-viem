@@ -34,7 +34,7 @@ export const approveAllowance = async ({
     ...params,
     address,
     abi,
-    function: 'approve',
+    functionName: 'approve',
     args: [spender, difference]
   });
 };
