@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getAddress, toHex } from 'viem';
 // eslint-disable-next-line max-len
 import { abi } from '@pactstech/contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json';
+import { getToken } from './processor.js';
 import { getDecimalsErc20, approveAllowanceErc20 } from './erc20.js';
 import { convertNumber, base64ToHex, encryptData } from './utils.js';
 
