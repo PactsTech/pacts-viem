@@ -16,13 +16,14 @@ export const approveAllowance = async ({
   account,
   address,
   amount,
+  spender,
   ...params
 }) => {
   const allowanceHex = await publicClient.readContract({
     address,
     abi,
     functionName: 'allowance',
-    args: [account]
+    args: [account, spender]
   });
   const allowance = BigInt(allowanceHex);
   const difference = amount - allowance;
@@ -34,6 +35,6 @@ export const approveAllowance = async ({
     address,
     abi,
     function: 'approve',
-    args: [address, difference]
+    args: [spender, difference]
   });
 };
