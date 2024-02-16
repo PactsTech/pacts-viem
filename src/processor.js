@@ -1,8 +1,11 @@
-import { getContract } from 'viem';
+import { getAddress, getContract } from 'viem';
 // eslint-disable-next-line max-len
 import { abi, bytecode } from '@pactstech/contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json';
 
-export const getProcessor = (params) => getContract({ abi, ...params });
+export const getProcessor = ({ address, ...params }) => {
+  const checksum = getAddress(address);
+  return getContract({ address: checksum, abi, ...params });
+};
 
 export const deployProcessor = async ({
   walletClient,

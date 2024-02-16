@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import { getAddress, toHex } from 'viem';
+import { toHex } from 'viem';
 // eslint-disable-next-line max-len
 import { abi } from '@pactstech/contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json';
-import { getToken } from './processor.js';
 import { getDecimalsErc20, approveAllowanceErc20 } from './erc20.js';
 import { convertNumber, base64ToHex, encryptData } from './utils.js';
 
@@ -12,6 +11,10 @@ export const getOrder = async ({ publicClient, orderId, ...params }) => {
     state,
     buyer,
     buyerPublicKey,
+    reporter,
+    reporterPublicKey,
+    arbiter,
+    arbiterPublicKey,
     price,
     shipping,
     lastModifiedBlock,
@@ -31,6 +34,10 @@ export const getOrder = async ({ publicClient, orderId, ...params }) => {
     state,
     buyer,
     buyerPublicKey,
+    reporter,
+    reporterPublicKey,
+    arbiter,
+    arbiterPublicKey,
     price,
     shipping,
     lastModifiedBlock,
@@ -52,11 +59,12 @@ export const setupOrder = async ({
   const addresses = await walletClient.requestAddresses();
   const account = addresses[0];
   const buyerPublicKey = await getEncryptionKey({ walletClient, account });
-  const token = await getToken({ publicClient, address });
+  const processor = getProcessor({ address, publicClient });
+  const token = await processor.read.token([]);
   const args = await createSubmitArgs({
     publicClient,
     account,
-    address,
+    processor,
     token,
     buyerPublicKey,
     price,
@@ -88,7 +96,7 @@ export const setupOrder = async ({
 export const createSubmitArgs = async ({
   publicClient,
   account,
-  address,
+  processor,
   token,
   orderId,
   buyerPublicKey,
@@ -97,6 +105,12 @@ export const createSubmitArgs = async ({
   metadata
 }) => {
   const decimals = await getDecimalsErc20({ publicClient, address: token });
+  const [reporter, reporterPublicKey, arbiter, arbiterPublicKey] = await Promise.all([
+    processor.read.reporter([]),
+    processor.read.reporterPublicKey([]),
+    processor.read.arbiter([]),
+    processor.read.arbiterPublicKey([])
+  ]);
   const id = orderId || uuidv4();
   const buyerPublicKeyHex = base64ToHex(buyerPublicKey);
   const priceDecimals = convertNumber(price, decimals);
@@ -105,9 +119,13 @@ export const createSubmitArgs = async ({
   const metadataHex = toHex(json);
   return {
     account,
-    address,
+    address: processor.address,
     orderId: id,
     buyerPublicKey: buyerPublicKeyHex,
+    reporter,
+    reporterPublicKey,
+    arbiter,
+    arbiterPublicKey,
     price: priceDecimals,
     shipping: shippingDecimals,
     metadata: metadataHex
@@ -139,8 +157,7 @@ export const shipOrder = async ({
   shipment,
   ...params
 }) => {
-  const checksum = getAddress(address);
-  const processor = getProcessor({ address: checksum, publicClient, walletClient, ...params });
+  const processor = getProcessor({ address, publicClient, walletClient, ...params });
   const [order, reporterPublicKey, arbiterPublicKey] = await Promise.all([
     processor.read.getOrder([orderId]),
     processor.read.reporterPublicKey([]),
