@@ -90,14 +90,14 @@ export const createSubmitArgs = async ({
   address,
   token,
   orderId,
-  encryptionKey,
+  buyerPublicKey,
   price,
   shipping,
   metadata
 }) => {
   const decimals = await getDecimalsErc20({ publicClient, address: token });
   const id = orderId || uuidv4();
-  const buyerPublicKey = base64ToHex(encryptionKey);
+  const buyerPublicKeyHex = base64ToHex(buyerPublicKey);
   const priceDecimals = convertNumber(price, decimals);
   const shippingDecimals = convertNumber(shipping, decimals);
   const json = JSON.stringify(metadata);
@@ -106,7 +106,7 @@ export const createSubmitArgs = async ({
     account,
     address,
     orderId: id,
-    buyerPublicKey,
+    buyerPublicKey: buyerPublicKeyHex,
     price: priceDecimals,
     shipping: shippingDecimals,
     metadata: metadataHex
