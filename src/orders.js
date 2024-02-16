@@ -52,7 +52,7 @@ export const setupOrder = async ({
   const addresses = await walletClient.requestAddresses();
   const account = addresses[0];
   const buyerPublicKey = await getEncryptionKey({ walletClient, account });
-  const token = await getToken({ publicClient, address: pactsAddress });
+  const token = await getToken({ publicClient, address });
   const args = await createSubmitArgs({
     publicClient,
     account,
