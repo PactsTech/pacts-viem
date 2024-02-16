@@ -6,7 +6,10 @@ const version = 'x25519-xsalsa20-poly1305';
 
 export const hexToBase64 = (hex) => Buffer.from(hex.slice(2), 'hex').toString('base64');
 
-export const convertNumber = (number, decimals) => parseUnits(`${number}`, decimals);
+export const convertNumber = (number, decimals) => {
+  const normalized = typeof decimals === 'bigint' ? Number(decimals) : decimals;
+  return parseUnits(`${number}`, normalized);
+};
 
 export const encryptData = ({ data, publicKeyHex }) => {
   const base64 = hexToBase64(publicKeyHex);
