@@ -16,7 +16,9 @@
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^7.0.1",
-    "@pactstech/contracts": "^1.1.2"
+    "@pactstech/contracts": "^1.1.2",
+    "buffer": "^6.0.3",
+    "erc-20-abi": "^1.0.1"
   },
   "peerDependencies": {
     "viem": "^1.0.0"
