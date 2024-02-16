@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { getAddress } from 'viem';
 // eslint-disable-next-line max-len
 import { abi } from '@pactstech/contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json';
