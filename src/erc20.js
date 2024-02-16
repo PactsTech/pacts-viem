@@ -32,6 +32,7 @@ export const approveAllowance = async ({
   }
   return walletClient.writeContract({
     ...params,
+    account,
     address,
     abi,
     functionName: 'approve',
