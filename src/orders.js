@@ -54,8 +54,9 @@ export const setupOrder = async ({
   const token = await getToken({ publicClient, address: pactsAddress });
   const args = await createSubmitArgs({
     publicClient,
-    token,
+    account,
     address,
+    token,
     buyerPublicKey,
     price,
     shipping,
@@ -85,6 +86,8 @@ export const setupOrder = async ({
 
 export const createSubmitArgs = async ({
   publicClient,
+  account,
+  address,
   token,
   orderId,
   encryptionKey,
@@ -100,6 +103,8 @@ export const createSubmitArgs = async ({
   const json = JSON.stringify(metadata);
   const metadataHex = toHex(json);
   return {
+    account,
+    address,
     orderId: id,
     buyerPublicKey,
     price: priceDecimals,
