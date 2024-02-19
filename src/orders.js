@@ -1,10 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { toHex } from 'viem';
 // eslint-disable-next-line max-len
 import { abi } from '@pactstech/contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json';
 import { getDecimalsErc20, approveAllowanceErc20 } from './erc20.js';
 import { getProcessor } from './processor.js';
-import { convertNumber, base64ToHex, encryptData } from './utils.js';
+import { convertNumber, utf8ToHex, base64ToHex, encryptData } from './utils.js';
 
 export const getOrder = async ({ publicClient, orderId, ...params }) => {
   const [
@@ -117,7 +116,7 @@ export const createSubmitArgs = async ({
   const priceDecimals = convertNumber(price, decimals);
   const shippingDecimals = convertNumber(shipping, decimals);
   const json = JSON.stringify(metadata);
-  const metadataHex = toHex(json);
+  const metadataHex = utf8ToHex(json);
   return {
     account,
     address: processor.address,
@@ -137,6 +136,8 @@ export const submitOrder = async ({
   walletClient,
   orderId,
   buyerPublicKey,
+  reporter,
+  arbiter,
   price,
   shipping,
   metadata,
@@ -146,7 +147,7 @@ export const submitOrder = async ({
     ...params,
     abi,
     functionName: 'submit',
-    args: [orderId, buyerPublicKey, price, shipping, metadata]
+    args: [orderId, buyerPublicKey, reporter, arbiter, price, shipping, metadata]
   });
 };
 
