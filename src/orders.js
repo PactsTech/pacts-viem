@@ -106,9 +106,9 @@ export const createSubmitArgs = async ({
 }) => {
   const decimals = await getDecimalsErc20({ publicClient, address: token });
   const [reporter, reporterPublicKey, arbiter, arbiterPublicKey] = await Promise.all([
-    processor.read.reporter([]),
+    processor.read.getReporter([]),
     processor.read.reporterPublicKey([]),
-    processor.read.arbiter([]),
+    processor.read.getArbiter([]),
     processor.read.arbiterPublicKey([])
   ]);
   const id = orderId || uuidv4();
