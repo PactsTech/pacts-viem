@@ -2,6 +2,7 @@
   "name": "@pactstech/pacts-viem",
   "version": "1.0.0",
   "description": "Utilities for interacting with pacts contracts from viem",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "release": "npx semantic-release@23",

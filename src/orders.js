@@ -3,6 +3,7 @@ import { toHex } from 'viem';
 // eslint-disable-next-line max-len
 import { abi } from '@pactstech/contracts/artifacts/contracts/OrderProcessorErc20.sol/OrderProcessorErc20.json';
 import { getDecimalsErc20, approveAllowanceErc20 } from './erc20.js';
+import { getProcessor } from './processor.js';
 import { convertNumber, base64ToHex, encryptData } from './utils.js';
 
 export const getOrder = async ({ publicClient, orderId, ...params }) => {
@@ -168,7 +169,7 @@ export const shipOrder = async ({
   const shipmentBuyer = encryptData({ data, publicKeyHex: buyerPublicKey });
   const shipmentReporter = encryptData({ data, publicKeyHex: reporterPublicKey });
   const shipmentArbiter = encryptData({ data, publicKeyHex: arbiterPublicKey });
-  return contract.write.ship([orderId, shipmentBuyer, shipmentReporter, shipmentArbiter]);
+  return processor.write.ship([orderId, shipmentBuyer, shipmentReporter, shipmentArbiter]);
 };
 
 export const deliverOrder = async ({ walletClient, orderId, ...params }) => {
