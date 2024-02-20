@@ -17,5 +17,5 @@ export const encryptData = ({ data, publicKeyHex }) => {
   const base64 = hexToBase64(publicKeyHex);
   const encrypted = encrypt({ data, publicKey: base64, version });
   const string = JSON.stringify(encrypted);
-  return Buffer.from(string, 'utf8');
+  return utf8ToHex(string);
 };
