@@ -1,18 +1,7 @@
-import js from '@eslint/js';
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
 
-export default [
-  js.configs.recommended,
-  {
-    files: ['src/**/*.js'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module'
-    },
-    rules: {
-      semi: ['error', 'always'],
-      quotes: ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
-      'prefer-const': 'error',
-      'max-len': ['error', { code: 100 }],
-    }
-  }
-];
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+);

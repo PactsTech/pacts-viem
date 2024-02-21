@@ -7,13 +7,22 @@
   "scripts": {
     "release": "npx semantic-release@23",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "compile": "tsc",
+    "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
     "eslint": "^8.56.0",
-    "semantic-release": "^23.0.0"
+    "semantic-release": "^23.0.0",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^7.0.2"
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^7.0.1",
