@@ -3,19 +3,23 @@ import { WriteContractReturnType } from 'viem';
 import { Account, Address, PublicClient, WalletClient, WriteContractParameters } from 'viem';
 
 export type ApproveAllowanceErc20Parameters = Omit<
-  WriteContractParameters, 'abi' | 'functionName' | 'args'
+  WriteContractParameters,
+  'abi' | 'functionName' | 'args'
 > & {
-  publicClient: PublicClient,
-  walletClient: WalletClient,
-  account: Address,
-  address: Address,
-  spender: Address,
-  amount: bigint
+  publicClient: PublicClient;
+  walletClient: WalletClient;
+  account: Address;
+  address: Address;
+  spender: Address;
+  amount: bigint;
 };
 
-export const getDecimalsErc20 = async ({ publicClient, address }: {
-  publicClient: PublicClient,
-  address: Address
+export const getDecimalsErc20 = async ({
+  publicClient,
+  address
+}: {
+  publicClient: PublicClient;
+  address: Address;
 }) => {
   const response = await publicClient.readContract({
     address,

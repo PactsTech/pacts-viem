@@ -13,7 +13,7 @@ export const convertNumber = (number: number | bigint, decimals: number | bigint
   return parseUnits(`${number}`, normalized);
 };
 
-export const encryptData = ({ data, publicKeyHex }: { data: string, publicKeyHex: Hex }) => {
+export const encryptData = ({ data, publicKeyHex }: { data: string; publicKeyHex: Hex }) => {
   const base64 = hexToBase64(publicKeyHex);
   const encrypted = encrypt({ data, publicKey: base64, version });
   const string = JSON.stringify(encrypted);

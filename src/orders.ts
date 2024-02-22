@@ -7,7 +7,14 @@ import { PublicClient } from 'viem';
 import { WalletClient } from 'viem';
 import { WriteContractParameters } from 'viem';
 
-export type State = 'submitted' | 'shipped' | 'delivered' | 'failed' | 'canceled' | 'disputed' | 'resolved';
+export type State =
+  | 'submitted'
+  | 'shipped'
+  | 'delivered'
+  | 'failed'
+  | 'canceled'
+  | 'disputed'
+  | 'resolved';
 
 export type Order = {
   id: string;
@@ -16,20 +23,20 @@ export type Order = {
   buyerPublicKey: string;
   price: bigint;
   shipping: bigint;
-  lastModifiedBlock: bigint,
+  lastModifiedBlock: bigint;
   state: State;
   metadata: Hex;
   shipmentBuyer: Hex;
   shipmentReporter: Hex;
 };
 
-export type Shipment = { carrier: string, trackingNumber: string };
+export type Shipment = { carrier: string; trackingNumber: string };
 
 type SlimWriteContractParameters = Omit<WriteContractParameters, 'abi' | 'functionName' | 'args'>;
 
 type GetOrderParameters = {
-  processor: Processor,
-  orderId: string
+  processor: Processor;
+  orderId: string;
 };
 
 export const getOrder = async ({ processor, orderId }: GetOrderParameters) => {
@@ -49,7 +56,7 @@ export const getOrder = async ({ processor, orderId }: GetOrderParameters) => {
     shipmentBuyer,
     shipmentReporter,
     shipmentArbiter
-  ] = await processor.read.getOrder([orderId]) as Array<unknown>;
+  ] = (await processor.read.getOrder([orderId])) as Array<unknown>;
   return {
     id: orderId,
     sequence,
@@ -71,13 +78,13 @@ export const getOrder = async ({ processor, orderId }: GetOrderParameters) => {
 };
 
 type SetupOrderParamters = {
-  publicClient: PublicClient,
-  walletClient: WalletClient,
-  processor: Processor,
-  orderId?: string,
-  price: bigint,
-  shipping: bigint,
-  metadata: any
+  publicClient: PublicClient;
+  walletClient: WalletClient;
+  processor: Processor;
+  orderId?: string;
+  price: bigint;
+  shipping: bigint;
+  metadata: any;
 };
 
 export const setupOrder = async ({
@@ -90,8 +97,8 @@ export const setupOrder = async ({
 }: SetupOrderParamters) => {
   const addresses = await walletClient.requestAddresses();
   const account = addresses[0];
-  const buyerPublicKey = await getEncryptionKey({ walletClient, account }) as string;
-  const token = await processor.read.token([]) as Address;
+  const buyerPublicKey = (await getEncryptionKey({ walletClient, account })) as string;
+  const token = (await processor.read.token([])) as Address;
   const args = await createSubmitArgs({
     publicClient,
     processor,
@@ -123,15 +130,15 @@ export const setupOrder = async ({
 };
 
 type CreateSubmitArgsParameters = {
-  publicClient: PublicClient,
-  processor: Processor,
-  account: Address,
-  token: Address,
-  orderId?: string,
-  buyerPublicKey: string,
-  price: bigint,
-  shipping: bigint,
-  metadata: any
+  publicClient: PublicClient;
+  processor: Processor;
+  account: Address;
+  token: Address;
+  orderId?: string;
+  buyerPublicKey: string;
+  price: bigint;
+  shipping: bigint;
+  metadata: any;
 };
 
 export const createSubmitArgs = async ({
@@ -173,15 +180,15 @@ export const createSubmitArgs = async ({
   };
 };
 
-type SubmitOrderParamters = & {
-  processor: Processor,
-  orderId: string,
-  buyerPublicKey: Hex,
-  reporter: Address,
-  arbiter: Address,
-  price: bigint,
-  shipping: bigint,
-  metadata: Hex
+type SubmitOrderParamters = {
+  processor: Processor;
+  orderId: string;
+  buyerPublicKey: Hex;
+  reporter: Address;
+  arbiter: Address;
+  price: bigint;
+  shipping: bigint;
+  metadata: Hex;
 };
 
 export const submitOrder = async ({
@@ -195,21 +202,16 @@ export const submitOrder = async ({
   metadata,
   ...params
 }: SubmitOrderParamters) => {
-  return processor.write.submit([
-    orderId,
-    buyerPublicKey,
-    reporter,
-    arbiter,
-    price,
-    shipping,
-    metadata
-  ], params);
+  return processor.write.submit(
+    [orderId, buyerPublicKey, reporter, arbiter, price, shipping, metadata],
+    params
+  );
 };
 
 type ShipOrderParameters = SlimWriteContractParameters & {
-  processor: Processor,
-  orderId: string,
-  shipment: Shipment
+  processor: Processor;
+  orderId: string;
+  shipment: Shipment;
 };
 
 export const shipOrder = async ({
@@ -231,8 +233,8 @@ export const shipOrder = async ({
 };
 
 type ReportOrderParameters = SlimWriteContractParameters & {
-  processor: Processor,
-  orderId: string
+  processor: Processor;
+  orderId: string;
 };
 
 export const deliverOrder = async ({ processor, orderId, ...params }: ReportOrderParameters) => {
@@ -243,7 +245,13 @@ export const failOrder = async ({ processor, orderId, ...params }: ReportOrderPa
   return processor.write.fail([orderId], params);
 };
 
-const getEncryptionKey = async ({ walletClient, account }: { walletClient: Client, account: Address }) => {
+const getEncryptionKey = async ({
+  walletClient,
+  account
+}: {
+  walletClient: Client;
+  account: Address;
+}) => {
   const request = { method: 'eth_getEncryptionPublicKey', params: [account] } as any;
   return walletClient.request(request);
 };

@@ -2,14 +2,13 @@
   "name": "@pactstech/pacts-viem",
   "version": "1.0.0",
   "description": "Utilities for interacting with pacts contracts from viem",
-  "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "release": "npx semantic-release@23",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "compile": "tsc",
-    "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "format": "prettier --config prettier.config.mjs 'src/**/*.ts' --write",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run lint"
@@ -21,6 +20,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
     "eslint": "^8.56.0",
+    "prettier": "^3.2.5",
     "semantic-release": "^23.0.0",
     "typescript": "^5.3.3",
     "typescript-eslint": "^7.0.2"
