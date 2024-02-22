@@ -90,7 +90,7 @@ export const setupOrder = async ({
 }: SetupOrderParamters) => {
   const addresses = await walletClient.requestAddresses();
   const account = addresses[0];
-  const buyerPublicKey = await getEncryptionKey({ walletClient, account });
+  const buyerPublicKey = await getEncryptionKey({ walletClient, account }) as string;
   const token = await processor.read.token([]) as Address;
   const args = await createSubmitArgs({
     publicClient,
@@ -244,5 +244,6 @@ export const failOrder = async ({ processor, orderId, ...params }: ReportOrderPa
 };
 
 const getEncryptionKey = async ({ walletClient, account }: { walletClient: Client, account: Address }) => {
-  return walletClient.request({ method: 'eth_getEncryptionPublicKey', params: [account] });
+  const request = { method: 'eth_getEncryptionPublicKey', params: [account] } as any;
+  return walletClient.request(request);
 };
