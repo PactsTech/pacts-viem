@@ -232,17 +232,29 @@ export const shipOrder = async ({
   return processor.write.ship([orderId, shipmentBuyer, shipmentReporter, shipmentArbiter], params);
 };
 
-type ReportOrderParameters = SlimWriteContractParameters & {
+type OrderActionParameters = SlimWriteContractParameters & {
   processor: Processor;
   orderId: string;
 };
 
-export const deliverOrder = async ({ processor, orderId, ...params }: ReportOrderParameters) => {
+export const deliverOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
   return processor.write.deliver([orderId], params);
 };
 
-export const failOrder = async ({ processor, orderId, ...params }: ReportOrderParameters) => {
+export const failOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
   return processor.write.fail([orderId], params);
+};
+
+export const completeOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
+  return processor.write.complete([orderId], params);
+};
+
+export const cancelOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
+  return processor.write.cancel([orderId], params);
+};
+
+export const disputeOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
+  return processor.write.dispute([orderId], params);
 };
 
 const getEncryptionKey = async ({
