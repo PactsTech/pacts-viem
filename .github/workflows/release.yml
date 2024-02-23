@@ -25,6 +25,8 @@ jobs:
       run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > .npmrc
     - name: Deps
       run: npm ci
+    - name: Compile
+      run: npm run compile
     - name: Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
