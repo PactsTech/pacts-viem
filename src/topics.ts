@@ -1,14 +1,20 @@
-import { Address, getEventSignature, keccak256, pad, toHex } from 'viem';
-import { abi } from './contract';
+import { Address, Hex, getEventSignature, keccak256, pad, toHex } from 'viem';
 import { AbiEvent } from 'abitype';
+import { abi } from './contract';
 
-export const deployedEvent = abi.find((event) => event.name === 'Deployed');
-export const submittedEvent = abi.find((event) => event.name === 'Submitted');
-export const shippedEvent = abi.find((event) => event.name === 'Shipped');
-export const deliveredEvent = abi.find((event) => event.name === 'Delivered');
-export const completedEvent = abi.find((event) => event.name === 'Completed');
-export const failedEvent = abi.find((event) => event.name === 'Failed');
-export const disputedEvent = abi.find((event) => event.name === 'Disputed');
+export type ProcessorEvent = 'Deployed';
+export type OrderEvent = 'Submitted' | 'Shipped' | 'Delivered' | 'Completed' | 'Failed' | 'Disputed' | 'Resolved';
+
+export type TopicMap = { [topic: Hex]: string };
+
+export const deployedEvent = abi.find((event) => event.name === 'Deployed') as AbiEvent;
+export const submittedEvent = abi.find((event) => event.name === 'Submitted') as AbiEvent;
+export const shippedEvent = abi.find((event) => event.name === 'Shipped') as AbiEvent;
+export const deliveredEvent = abi.find((event) => event.name === 'Delivered') as AbiEvent;
+export const completedEvent = abi.find((event) => event.name === 'Completed') as AbiEvent;
+export const failedEvent = abi.find((event) => event.name === 'Failed') as AbiEvent;
+export const disputedEvent = abi.find((event) => event.name === 'Disputed') as AbiEvent;
+export const resolvedEvent = abi.find((event) => event.name === 'Resolved') as AbiEvent;
 
 export const orderEvents = Object.freeze([
   submittedEvent,
@@ -17,14 +23,15 @@ export const orderEvents = Object.freeze([
   completedEvent,
   failedEvent,
   disputedEvent,
+  resolvedEvent
 ]);
 
 export const toTopics = (events: AbiEvent | readonly [AbiEvent]) => (Array.isArray(events) ? events : [events])
   .map((event) => getEventSignature(event))
   .map((signature) => keccak256(toHex(signature)));
 
-export const deployedTopic = toTopics(deployedEvent as any)[0];
-export const orderTopics = toTopics(orderEvents as any);
+export const deployedTopic = toTopics(deployedEvent as AbiEvent)[0];
+export const orderTopics = toTopics(orderEvents as [AbiEvent]);
 
 export const generateOrderTopics = ({ address }: { address: Address }) => {
   const padded = pad(address);
@@ -37,12 +44,12 @@ export const generateProcessorTopics = ({ address }: { address: Address }) => {
 };
 
 const map = [deployedEvent, ...orderEvents].reduce((acc, event) => {
-  const [topic] = toTopics(event as any);
-  const name = event?.name?.toLowerCase();
+  const [topic] = toTopics(event);
+  const name = event?.name;
   if (!name) {
     return acc;
   }
   return { ...acc, [topic]: name };
-}, {});
+}, {} as TopicMap);
 
 export const topicMap = Object.freeze(map);
