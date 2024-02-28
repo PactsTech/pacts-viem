@@ -1,6 +1,6 @@
 import abi from 'erc-20-abi';
 import { WriteContractReturnType } from 'viem';
-import { Account, Address, PublicClient, WalletClient, WriteContractParameters } from 'viem';
+import { Address, PublicClient, WalletClient, WriteContractParameters } from 'viem';
 
 export type ApproveAllowanceErc20Parameters = Omit<
   WriteContractParameters,

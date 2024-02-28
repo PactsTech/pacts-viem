@@ -15,7 +15,7 @@ npm i @pactstech/pacts-viem
 import { createPublicClient, createWalletClient, custom } from 'viem';
 import { getProcessor, setupOrder, submitOrder } from '@pactstech/pacts-viem';
 
-// client setup
+// viem client setup
 const transport = custom(window.ethereum);
 const publicClient = createPublicClient({ chain, transport });
 const walletClient = createWalletClient({ chain, transport });
