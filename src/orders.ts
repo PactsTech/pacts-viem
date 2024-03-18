@@ -13,6 +13,7 @@ export type State =
   | 'delivered'
   | 'failed'
   | 'canceled'
+  | 'aborted'
   | 'disputed'
   | 'resolved';
 
@@ -251,6 +252,10 @@ export const completeOrder = async ({ processor, orderId, ...params }: OrderActi
 
 export const cancelOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
   return processor.write.cancel([orderId], params);
+};
+
+export const abortOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
+  return processor.write.abort([orderId], params);
 };
 
 export const disputeOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
