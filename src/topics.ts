@@ -3,7 +3,16 @@ import { AbiEvent } from 'abitype';
 import { abi } from './contract';
 
 export type ProcessorEvent = 'Deployed';
-export type OrderEvent = 'Submitted' | 'Shipped' | 'Delivered' | 'Completed' | 'Failed' | 'Disputed' | 'Resolved';
+export type OrderEvent =
+  'Submitted'
+  | 'Shipped'
+  | 'Delivered'
+  | 'Completed'
+  | 'Failed'
+  | 'Canceled'
+  | 'Aborted'
+  | 'Disputed'
+  | 'Resolved';
 
 export type TopicMap = { [topic: Hex]: string };
 
@@ -13,6 +22,8 @@ export const shippedEvent = abi.find((event) => event.name === 'Shipped') as Abi
 export const deliveredEvent = abi.find((event) => event.name === 'Delivered') as AbiEvent;
 export const completedEvent = abi.find((event) => event.name === 'Completed') as AbiEvent;
 export const failedEvent = abi.find((event) => event.name === 'Failed') as AbiEvent;
+export const canceledEvent = abi.find((event) => event.name === 'Canceled') as AbiEvent;
+export const abortedEvent = abi.find((event) => event.name === 'Aborted') as AbiEvent;
 export const disputedEvent = abi.find((event) => event.name === 'Disputed') as AbiEvent;
 export const resolvedEvent = abi.find((event) => event.name === 'Resolved') as AbiEvent;
 
@@ -22,6 +33,8 @@ export const orderEvents = Object.freeze([
   deliveredEvent,
   completedEvent,
   failedEvent,
+  canceledEvent,
+  abortedEvent,
   disputedEvent,
   resolvedEvent
 ]);
