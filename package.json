@@ -34,6 +34,6 @@
   },
   "peerDependencies": {
     "abitype": "^0.9.0",
-    "viem": "^1.0.0"
+    "viem": "^2.0.0"
   }
 }

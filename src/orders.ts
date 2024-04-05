@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Address, Client, Hex } from 'viem';
+import { Address, Chain, Client, Hex } from 'viem';
 import { getDecimalsErc20, approveAllowanceErc20 } from './erc20';
 import { Processor } from './processor';
 import { convertNumber, utf8ToHex, base64ToHex, encryptData } from './utils';
@@ -79,6 +79,7 @@ export const getOrder = async ({ processor, orderId }: GetOrderParameters) => {
 };
 
 type SetupOrderParamters = {
+  chain?: Chain,
   publicClient: PublicClient;
   walletClient: WalletClient;
   processor: Processor;
@@ -89,6 +90,7 @@ type SetupOrderParamters = {
 };
 
 export const setupOrder = async ({
+  chain,
   publicClient,
   walletClient,
   processor,
@@ -112,6 +114,7 @@ export const setupOrder = async ({
   });
   const amount = args.price + args.shipping;
   const approvalHash = await approveAllowanceErc20({
+    chain,
     address: token,
     publicClient,
     walletClient,

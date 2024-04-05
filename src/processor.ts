@@ -1,5 +1,6 @@
 import {
   getContract,
+  Client,
   PublicClient,
   WalletClient,
   GetContractParameters,
@@ -11,10 +12,10 @@ import { GetContractReturnType } from 'viem';
 
 export type GetProcessorParameters = Omit<
   GetContractParameters,
-  'publicClient' | 'walletClient' | 'abi'
+  'client' | 'abi'
 > & {
-  publicClient?: PublicClient;
-  walletClient?: WalletClient;
+  publicClient: PublicClient;
+  walletClient: WalletClient;
 };
 
 export type DeployProcessorParameters = Omit<DeployContractParameters, 'abi' | 'bytecode'> & {
@@ -28,11 +29,11 @@ export type DeployProcessorParameters = Omit<DeployContractParameters, 'abi' | '
   token: Address;
 };
 
-export type Processor = GetContractReturnType<typeof abi, PublicClient, WalletClient, Address>;
+export type Processor = GetContractReturnType<typeof abi, Client, Address>;
 
 export const getProcessor = (params: GetProcessorParameters): Processor => {
   const { publicClient, walletClient, address, ...rest } = params;
-  return getContract({ ...rest, publicClient, walletClient, abi, address });
+  return getContract({ ...rest, client: { public: publicClient, wallet: walletClient }, abi, address });
 };
 
 export const deployProcessor = async ({

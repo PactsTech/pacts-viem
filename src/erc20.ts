@@ -1,6 +1,11 @@
 import abi from 'erc-20-abi';
-import { WriteContractReturnType } from 'viem';
-import { Address, PublicClient, WalletClient, WriteContractParameters } from 'viem';
+import {
+  Address,
+  PublicClient,
+  WalletClient,
+  WriteContractParameters,
+  WriteContractReturnType
+} from 'viem';
 
 export type ApproveAllowanceErc20Parameters = Omit<
   WriteContractParameters,
@@ -33,7 +38,7 @@ export const getDecimalsErc20 = async ({
 export const approveAllowanceErc20 = async (
   params: ApproveAllowanceErc20Parameters
 ): Promise<WriteContractReturnType | undefined> => {
-  const { publicClient, walletClient, type, chain, address, account, spender, amount } = params;
+  const { publicClient, walletClient, chain, address, account, spender, amount } = params;
   const allowanceHex = await publicClient.readContract({
     address,
     abi,
@@ -46,7 +51,6 @@ export const approveAllowanceErc20 = async (
     return;
   }
   return walletClient.writeContract({
-    type,
     chain,
     account,
     address,
