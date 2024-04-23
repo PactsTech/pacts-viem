@@ -31,7 +31,7 @@ export type Order = {
   shipmentReporter: Hex;
 };
 
-export type Shipment = { carrier: string; trackingNumber: string };
+export type Shipment = [string, string];
 
 type SlimWriteContractParameters = Omit<WriteContractParameters, 'abi' | 'functionName' | 'args'>;
 
@@ -215,13 +215,13 @@ export const submitOrder = async ({
 type ShipOrderParameters = SlimWriteContractParameters & {
   processor: Processor;
   orderId: string;
-  shipment: Shipment;
+  shipments: Shipment[];
 };
 
 export const shipOrder = async ({
   processor,
   orderId,
-  shipment,
+  shipments,
   ...params
 }: ShipOrderParameters) => {
   const [{ buyerPublicKey }, reporterPublicKey, arbiterPublicKey] = await Promise.all([
@@ -229,7 +229,7 @@ export const shipOrder = async ({
     processor.read.reporterPublicKey([]),
     processor.read.arbiterPublicKey([])
   ]);
-  const data = JSON.stringify(shipment);
+  const data = JSON.stringify(shipments);
   const shipmentBuyer = encryptData({ data, publicKeyHex: buyerPublicKey as Hex });
   const shipmentReporter = encryptData({ data, publicKeyHex: reporterPublicKey as Hex });
   const shipmentArbiter = encryptData({ data, publicKeyHex: arbiterPublicKey as Hex });
