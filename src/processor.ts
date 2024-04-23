@@ -21,7 +21,8 @@ export type GetProcessorParameters = Omit<
 export type DeployProcessorParameters = Omit<DeployContractParameters, 'abi' | 'bytecode'> & {
   walletClient: WalletClient;
   storeName: string;
-  waitBlocks: bigint;
+  cancelBlocks: bigint;
+  disputeBlocks: bigint;
   reporter: Address;
   reporterPublicKey: string;
   arbiter: Address;
@@ -41,7 +42,8 @@ export const deployProcessor = async ({
   chain,
   account,
   storeName,
-  waitBlocks,
+  cancelBlocks,
+  disputeBlocks,
   reporter,
   reporterPublicKey,
   arbiter,
@@ -53,6 +55,15 @@ export const deployProcessor = async ({
     account,
     abi,
     bytecode,
-    args: [storeName, waitBlocks, reporter, reporterPublicKey, arbiter, arbiterPublicKey, token]
+    args: [
+      storeName,
+      cancelBlocks,
+      disputeBlocks,
+      reporter,
+      reporterPublicKey,
+      arbiter,
+      arbiterPublicKey,
+      token
+    ]
   });
 };
