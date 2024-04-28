@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Address, Chain, Client, Hex } from 'viem';
+import { Address, Chain, Client, Hex, getAddress } from 'viem';
 import { getDecimalsErc20, approveAllowanceErc20 } from './erc20';
 import { Processor } from './processor';
 import { convertNumber, utf8ToHex, base64ToHex, encryptData } from './utils';
@@ -142,7 +142,7 @@ type CreateSubmitArgsParameters = {
   buyerPublicKey: string;
   price: bigint;
   shipping: bigint;
-  metadata: any;
+  metadata?: any;
 };
 
 export const createSubmitArgs = async ({
@@ -157,27 +157,25 @@ export const createSubmitArgs = async ({
   metadata
 }: CreateSubmitArgsParameters) => {
   const decimals = await getDecimalsErc20({ publicClient, address: token });
-  const [reporter, reporterPublicKey, arbiter, arbiterPublicKey] = await Promise.all([
+  const [reporter, arbiter] = await Promise.all([
     processor.read.getReporter([]),
-    processor.read.reporterPublicKey([]),
-    processor.read.getArbiter([]),
-    processor.read.arbiterPublicKey([])
+    processor.read.getArbiter([])
   ]);
   const id = orderId || uuidv4();
   const buyerPublicKeyHex = base64ToHex(buyerPublicKey);
+  const reporterAddress = getAddress(reporter as string);
+  const arbiterAddress = getAddress(arbiter as string);
   const priceDecimals = convertNumber(price, decimals);
   const shippingDecimals = convertNumber(shipping, decimals);
-  const json = JSON.stringify(metadata);
+  const json = JSON.stringify(metadata || {});
   const metadataHex = utf8ToHex(json);
   return {
     account,
     address: processor.address,
     orderId: id,
     buyerPublicKey: buyerPublicKeyHex,
-    reporter,
-    reporterPublicKey,
-    arbiter,
-    arbiterPublicKey,
+    reporter: reporterAddress,
+    arbiter: arbiterAddress,
     price: priceDecimals,
     shipping: shippingDecimals,
     metadata: metadataHex

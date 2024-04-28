@@ -5,8 +5,10 @@ pacts-viem is a simple tool set of helper functions to interact with [pacts](htt
 
 ### Installation
 
+Install `@pactstech/pacts-viem` and its peer dependencies:
+
 ```sh
-npm i @pactstech/pacts-viem
+npm i viem@^2.9.0 abitype@^1.0.0 @pactstech/pacts-viem
 ```
 
 ### Submitting an Order
