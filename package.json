@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^7.0.1",
-    "@pactstech/contracts": "^5.0.0",
+    "@pactstech/contracts": "^6.0.0",
     "buffer": "^6.0.3",
     "erc-20-abi": "^1.0.1",
     "uuid": "^9.0.1"

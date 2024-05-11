@@ -210,11 +210,12 @@ export const submitOrder = async ({
   );
 };
 
-type ShipOrderParameters = SlimWriteContractParameters & {
+type OrderActionParameters = SlimWriteContractParameters & {
   processor: Processor;
   orderId: string;
-  shipments: Shipment[];
 };
+
+type ShipOrderParameters = OrderActionParameters & { shipments: Shipment[]; };
 
 export const shipOrder = async ({
   processor,
@@ -232,11 +233,6 @@ export const shipOrder = async ({
   const shipmentReporter = encryptData({ data, publicKeyHex: reporterPublicKey as Hex });
   const shipmentArbiter = encryptData({ data, publicKeyHex: arbiterPublicKey as Hex });
   return processor.write.ship([orderId, shipmentBuyer, shipmentReporter, shipmentArbiter], params);
-};
-
-type OrderActionParameters = SlimWriteContractParameters & {
-  processor: Processor;
-  orderId: string;
 };
 
 export const deliverOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
@@ -259,8 +255,10 @@ export const abortOrder = async ({ processor, orderId, ...params }: OrderActionP
   return processor.write.abort([orderId], params);
 };
 
-export const disputeOrder = async ({ processor, orderId, ...params }: OrderActionParameters) => {
-  return processor.write.dispute([orderId], params);
+type DisputeOrderParamters = OrderActionParameters & { disputeUrl: string; };
+
+export const disputeOrder = async ({ processor, orderId, disputeUrl, ...params }: DisputeOrderParamters) => {
+  return processor.write.dispute([orderId, disputeUrl], params);
 };
 
 const getEncryptionKey = async ({
