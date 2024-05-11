@@ -14,17 +14,17 @@ npm i viem@^2.9.0 abitype@^1.0.0 @pactstech/pacts-viem
 ### Submitting an Order
 
 ```js
-import { createPublicClient, createWalletClient, custom } from 'viem';
+import { createPublicClient, createWalletClient, custom, publicActions } from 'viem';
 import { getProcessor, setupOrder, submitOrder } from '@pactstech/pacts-viem';
 
 // viem client setup
 const transport = custom(window.ethereum);
 const publicClient = createPublicClient({ chain, transport });
-const walletClient = createWalletClient({ chain, transport });
+const walletClient = createWalletClient({ chain, transport }).extend(publicActions);
 
 // get processor instance
 const address = '0xad26caf683334cbe5aa388c2278265c35a714f7a';
-const processor = getProcessor({ address, publicClient, walletClient });
+const processor = getProcessor({ address, client: walletClient });
 
 // pacts order details
 const orderId = 'dbdf2d90-b66e-4f39-bec3-388f76eadb42';
