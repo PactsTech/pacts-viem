@@ -1,4 +1,4 @@
-import { Address, Hex, getEventSignature, keccak256, pad, toHex } from 'viem';
+import { Address, Hex, toEventSignature, keccak256, pad, toHex } from 'viem';
 import { AbiEvent } from 'abitype';
 import { abi } from './contract';
 
@@ -40,7 +40,7 @@ export const orderEvents = Object.freeze([
 ]);
 
 export const toTopics = (events: AbiEvent | readonly [AbiEvent]) => (Array.isArray(events) ? events : [events])
-  .map((event) => getEventSignature(event))
+  .map((event) => toEventSignature(event))
   .map((signature) => keccak256(toHex(signature)));
 
 export const deployedTopic = toTopics(deployedEvent as AbiEvent)[0];
