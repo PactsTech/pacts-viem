@@ -94,6 +94,7 @@ export const setupOrder = async ({
   publicClient,
   walletClient,
   processor,
+  orderId,
   price,
   shipping,
   metadata
@@ -107,6 +108,7 @@ export const setupOrder = async ({
     processor,
     account,
     token,
+    orderId,
     buyerPublicKey,
     price,
     shipping,

@@ -23,7 +23,7 @@ const publicClient = createPublicClient({ chain, transport });
 const walletClient = createWalletClient({ chain, transport }).extend(publicActions);
 
 // get processor instance
-const address = '0xad26caf683334cbe5aa388c2278265c35a714f7a';
+const address = '0x1234567890123456789012345678901234567890';
 const processor = getProcessor({ address, client: walletClient });
 
 // pacts order details
