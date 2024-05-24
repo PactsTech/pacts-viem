@@ -8,7 +8,7 @@ export const utf8ToHex = (utf8: string): Hex => `0x${Buffer.from(utf8, 'utf8').t
 export const base64ToHex = (base64: string): Hex => `0x${Buffer.from(base64, 'base64').toString('hex')}`;
 export const hexToBase64 = (hex: Hex) => Buffer.from(hex.slice(2), 'hex').toString('base64');
 
-export const convertNumber = (number: number | bigint, decimals: number | bigint) => {
+export const convertNumber = (number: number | bigint | string, decimals: number | bigint) => {
   const normalized = typeof decimals === 'bigint' ? Number(decimals) : decimals;
   return parseUnits(`${number}`, normalized);
 };

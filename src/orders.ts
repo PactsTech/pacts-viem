@@ -84,8 +84,8 @@ type SetupOrderParamters = {
   walletClient: WalletClient;
   processor: Processor;
   orderId?: string;
-  price: bigint;
-  shipping: bigint;
+  price: bigint | string;
+  shipping: bigint | string;
   metadata: any;
 };
 
@@ -115,6 +115,7 @@ export const setupOrder = async ({
     metadata
   });
   const amount = args.price + args.shipping;
+  // TODO check balance here
   const approvalHash = await approveAllowanceErc20({
     chain,
     address: token,
@@ -142,8 +143,8 @@ type CreateSubmitArgsParameters = {
   token: Address;
   orderId?: string;
   buyerPublicKey: string;
-  price: bigint;
-  shipping: bigint;
+  price: bigint | string;
+  shipping: bigint | string;
   metadata?: any;
 };
 
